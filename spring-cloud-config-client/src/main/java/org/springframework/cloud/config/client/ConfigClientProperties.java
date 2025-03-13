@@ -352,6 +352,29 @@ public class ConfigClientProperties {
 		this.sendAllLabels = sendAllLabels;
 	}
 
+	public ConfigClientProperties override(org.springframework.core.env.Environment environment) {
+		ConfigClientProperties override = new ConfigClientProperties();
+		BeanUtils.copyProperties(this, override);
+		override.setName(environment.resolvePlaceholders(NAME_PLACEHOLDER));
+		if (environment.containsProperty(ConfigClientProperties.PREFIX + ".profile")) {
+			override.setProfile(environment.getProperty(ConfigClientProperties.PREFIX + ".profile"));
+		}
+		if (environment.containsProperty(ConfigClientProperties.PREFIX + ".label")) {
+			override.setLabel(environment.getProperty(ConfigClientProperties.PREFIX + ".label"));
+		}
+		return override;
+	}
+
+	@Override
+	public String toString() {
+		return "ConfigClientProperties [enabled=" + this.enabled + ", profile=" + this.profile + ", name=" + this.name
+				+ ", label=" + this.label + ", username=" + this.username + ", password=" + this.password + ", uri="
+				+ Arrays.toString(this.uri) + ", mediaType=" + this.mediaType + ", discovery=" + this.discovery
+				+ ", failFast=" + this.failFast + ", token=" + this.token + ", requestConnectTimeout="
+				+ this.requestConnectTimeout + ", requestReadTimeout=" + this.requestReadTimeout + ", sendState="
+				+ this.sendState + ", headers=" + this.headers + ", sendAllLabels=" + this.sendAllLabels + "]";
+	}
+
 	private Credentials extractCredentials(int index) {
 		Credentials result = new Credentials();
 		int noOfUrl = this.uri.length;
@@ -419,29 +442,6 @@ public class ConfigClientProperties {
 			credentials.username = "user";
 		}
 		return credentials;
-	}
-
-	public ConfigClientProperties override(org.springframework.core.env.Environment environment) {
-		ConfigClientProperties override = new ConfigClientProperties();
-		BeanUtils.copyProperties(this, override);
-		override.setName(environment.resolvePlaceholders(NAME_PLACEHOLDER));
-		if (environment.containsProperty(ConfigClientProperties.PREFIX + ".profile")) {
-			override.setProfile(environment.getProperty(ConfigClientProperties.PREFIX + ".profile"));
-		}
-		if (environment.containsProperty(ConfigClientProperties.PREFIX + ".label")) {
-			override.setLabel(environment.getProperty(ConfigClientProperties.PREFIX + ".label"));
-		}
-		return override;
-	}
-
-	@Override
-	public String toString() {
-		return "ConfigClientProperties [enabled=" + this.enabled + ", profile=" + this.profile + ", name=" + this.name
-				+ ", label=" + this.label + ", username=" + this.username + ", password=" + this.password + ", uri="
-				+ Arrays.toString(this.uri) + ", mediaType=" + this.mediaType + ", discovery=" + this.discovery
-				+ ", failFast=" + this.failFast + ", token=" + this.token + ", requestConnectTimeout="
-				+ this.requestConnectTimeout + ", requestReadTimeout=" + this.requestReadTimeout + ", sendState="
-				+ this.sendState + ", headers=" + this.headers + ", sendAllLabels=" + this.sendAllLabels + "]";
 	}
 
 	/**
