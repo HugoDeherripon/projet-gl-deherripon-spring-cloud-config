@@ -41,14 +41,14 @@ public class PropertyPathNotification {
 		this.paths = paths;
 	}
 
-	public boolean equals(Object o) {
-		if (o == this) {
+	public boolean equals(Object objectToTest) {
+		if (objectToTest == this) {
 			return true;
 		}
-		if (!(o instanceof PropertyPathNotification)) {
+		if (!(objectToTest instanceof PropertyPathNotification)) {
 			return false;
 		}
-		final PropertyPathNotification other = (PropertyPathNotification) o;
+		final PropertyPathNotification other = (PropertyPathNotification) objectToTest;
 		if (!other.canEqual(this)) {
 			return false;
 		}
