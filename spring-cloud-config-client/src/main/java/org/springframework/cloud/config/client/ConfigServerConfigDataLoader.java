@@ -277,106 +277,71 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 			String label, String state) {
 		ConfigClientProperties properties = resource.getProperties();
 		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);
-
-		String path = "/{name}/{profile}";
-		String name = properties.getName();
-		String profile = resource.getProfiles();
-		String token = properties.getToken();
-		String[] uris;
-		boolean discoveryEnabled = properties.getDiscovery().isEnabled();
-		ConfigClientProperties bootstrapConfigClientProperties = context.getBootstrapContext()
-			.get(ConfigClientProperties.class);
-		// In the case where discovery is enabled we need to extract the config server
-		// uris, username, and password
-		// from the properties from the context. These are set in
-		// ConfigServerInstanceMonitor.refresh which will only
-		// be called the first time we fetch configuration.
-		if (discoveryEnabled) {
-			uris = bootstrapConfigClientProperties.getUri();
+		
+		// Préparer la requête
+		String[] uris = properties.getDiscovery().isEnabled() 
+			? context.getBootstrapContext().get(ConfigClientProperties.class).getUri()
+			: properties.getUri();
+			
+		String path = "/{name}/{profile}" + (StringUtils.hasText(label) ? "/{label}" : "");
+		Object[] pathVariables = StringUtils.hasText(label) 
+			? new String[] { properties.getName(), resource.getProfiles(), Environment.denormalize(label) }
+			: new String[] { properties.getName(), resource.getProfiles() };
+		
+		// Préparer les en-têtes
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.parseMediaType(properties.getMediaType())));
+		headers.setAcceptCharset(Collections.singletonList(properties.getCharset()));
+		
+		if (StringUtils.hasText(properties.getToken())) {
+			headers.add(TOKEN_HEADER, properties.getToken());
 		}
-		else {
-			uris = properties.getUri();
+		if (StringUtils.hasText(state) && properties.isSendState()) {
+			headers.add(STATE_HEADER, state);
 		}
-		int noOfUrls = uris.length;
-		if (uris.length > 1) {
-			logger.info("Multiple Config Server Urls found listed.");
-		}
-
-		Object[] args = new String[] { name, profile };
-		if (StringUtils.hasText(label)) {
-			// workaround for Spring MVC matching / in paths
-			label = Environment.denormalize(label);
-			args = new String[] { name, profile, label };
-			path = path + "/{label}";
-		}
-		ResponseEntity<Environment> response = null;
-		List<MediaType> acceptHeader = Collections.singletonList(MediaType.parseMediaType(properties.getMediaType()));
-		List<Charset> acceptCharsetHeader = Collections.singletonList(properties.getCharset());
-
+		
+		// Essayer chaque URI jusqu'à ce qu'une fonctionne
 		ConfigClientRequestTemplateFactory requestTemplateFactory = context.getBootstrapContext()
 			.get(ConfigClientRequestTemplateFactory.class);
-
-		for (int i = 0; i < noOfUrls; i++) {
-			String username;
-			String password;
+			
+		for (int i = 0; i < uris.length; i++) {
 			String uri = uris[i];
-			if (discoveryEnabled) {
-				password = bootstrapConfigClientProperties.getPassword();
-				username = bootstrapConfigClientProperties.getUsername();
-			}
-			else {
-				ConfigClientProperties.Credentials credentials = properties.getCredentials(i);
-				uri = credentials.getUri();
-				username = credentials.getUsername();
-				password = credentials.getPassword();
-			}
-
-			logger.info("Fetching config from server at : " + uri);
-
 			try {
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(acceptHeader);
-				headers.setAcceptCharset(acceptCharsetHeader);
-				requestTemplateFactory.addAuthorizationToken(headers, username, password);
-				if (StringUtils.hasText(token)) {
-					headers.add(TOKEN_HEADER, token);
+				// Ajouter l'authentification
+				if (properties.getDiscovery().isEnabled()) {
+					ConfigClientProperties bootstrap = context.getBootstrapContext().get(ConfigClientProperties.class);
+					requestTemplateFactory.addAuthorizationToken(headers, bootstrap.getUsername(), bootstrap.getPassword());
+				} else {
+					ConfigClientProperties.Credentials credentials = properties.getCredentials(i);
+					requestTemplateFactory.addAuthorizationToken(headers, credentials.getUsername(), credentials.getPassword());
 				}
-				if (StringUtils.hasText(state) && properties.isSendState()) {
-					headers.add(STATE_HEADER, state);
+				
+				// Faire la requête
+				HttpEntity<Void> entity = new HttpEntity<>(null, headers);
+				ResponseEntity<Environment> response = restTemplate.exchange(
+					uri + path, HttpMethod.GET, entity, Environment.class, pathVariables);
+					
+				if (response.getStatusCode() == HttpStatus.OK) {
+					return response.getBody();
 				}
-
-				final HttpEntity<Void> entity = new HttpEntity<>((Void) null, headers);
-				response = restTemplate.exchange(uri + path, HttpMethod.GET, entity, Environment.class, args);
 			}
 			catch (HttpClientErrorException | HttpServerErrorException e) {
-				if (i < noOfUrls - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS) {
-					logger.info("Failed to fetch configs from server at  : " + uri
-							+ ". Will try the next url if available. Error : " + e.getMessage());
+				// Continuer avec l'URI suivante si possible
+				if (e.getStatusCode() == HttpStatus.NOT_FOUND || 
+					(i < uris.length - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS)) {
+					logger.info("Failed to fetch configs from server at " + uri + ". Will try next URL if available.");
 					continue;
 				}
-
-				if (e.getStatusCode() != HttpStatus.NOT_FOUND) {
-					throw e;
-				}
+				throw e;
 			}
 			catch (ResourceAccessException e) {
-				logger.info("Exception on Url - " + uri + ":" + e + ". Will be trying the next url if available");
-				if (i == noOfUrls - 1) {
+				if (i == uris.length - 1) {
 					throw e;
 				}
-				else {
-					continue;
-				}
+				logger.info("Connection failed for " + uri + ". Will try next URL if available.");
 			}
-
-			if (response == null || response.getStatusCode() != HttpStatus.OK) {
-				return null;
-			}
-
-			Environment result = response.getBody();
-			return result;
 		}
-
+		
 		return null;
 	}
 
