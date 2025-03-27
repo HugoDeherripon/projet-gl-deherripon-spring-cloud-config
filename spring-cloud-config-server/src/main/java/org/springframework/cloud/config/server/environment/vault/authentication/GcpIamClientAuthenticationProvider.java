@@ -22,7 +22,7 @@ import java.util.Base64;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
-import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;

@@ -74,19 +74,8 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.APPROLE;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.AWS_EC2;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.AWS_IAM;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.AZURE_MSI;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.CERT;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.CUBBYHOLE;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.GCP_GCE;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.GCP_IAM;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.KUBERNETES;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.PCF;
-import static org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod.TOKEN;
-import static org.springframework.vault.authentication.AzureMsiAuthenticationOptions.DEFAULT_IDENTITY_TOKEN_SERVICE_URI;
-import static org.springframework.vault.authentication.AzureMsiAuthenticationOptions.DEFAULT_INSTANCE_METADATA_SERVICE_URI;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
+import org.springframework.vault.authentication.AzureMsiAuthenticationOptions;
 
 class SpringVaultClientConfigurationTests {
 
@@ -120,7 +109,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void appRoleAuthentication() {
-		properties.setAuthentication(APPROLE);
+		properties.setAuthentication(AuthenticationMethod.APPROLE);
 		properties.getAppRole().setRoleId("role-id");
 
 		assertClientAuthenticationOfType(properties, AppRoleAuthentication.class);
@@ -128,7 +117,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void awsEc2Authentication() {
-		properties.setAuthentication(AWS_EC2);
+		properties.setAuthentication(AuthenticationMethod.AWS_EC2);
 		properties.getAwsEc2().setRole("server");
 		properties.getAwsEc2().setAwsEc2Path("aws-ec2");
 
@@ -140,7 +129,7 @@ class SpringVaultClientConfigurationTests {
 		System.setProperty("aws.accessKeyId", "access-key-id");
 		System.setProperty("aws.secretAccessKey", "secret-key");
 
-		properties.setAuthentication(AWS_IAM);
+		properties.setAuthentication(AuthenticationMethod.AWS_IAM);
 		properties.getAwsIam().setRole("server");
 		properties.getAwsIam().setAwsPath("aws-iam");
 
@@ -149,7 +138,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void azureMsiAuthentication() {
-		properties.setAuthentication(AZURE_MSI);
+		properties.setAuthentication(AuthenticationMethod.AZURE_MSI);
 		properties.getAzureMsi().setRole("server");
 		properties.getAzureMsi().setAzurePath("azure-msi");
 
@@ -160,20 +149,20 @@ class SpringVaultClientConfigurationTests {
 		AzureMsiAuthenticationOptions options = (AzureMsiAuthenticationOptions) ReflectionTestUtils
 			.getField(clientAuthentication, "options");
 
-		assertThat(options.getIdentityTokenServiceUri()).isEqualTo(DEFAULT_IDENTITY_TOKEN_SERVICE_URI);
-		assertThat(options.getInstanceMetadataServiceUri()).isEqualTo(DEFAULT_INSTANCE_METADATA_SERVICE_URI);
+		assertThat(options.getIdentityTokenServiceUri()).isEqualTo(AzureMsiAuthenticationOptions.DEFAULT_IDENTITY_TOKEN_SERVICE_URI);
+		assertThat(options.getInstanceMetadataServiceUri()).isEqualTo(AzureMsiAuthenticationOptions.DEFAULT_INSTANCE_METADATA_SERVICE_URI);
 	}
 
 	@Test
 	public void clientCertificateAuthentication() {
-		properties.setAuthentication(CERT);
+		properties.setAuthentication(AuthenticationMethod.CERT);
 
 		assertClientAuthenticationOfType(properties, ClientCertificateAuthentication.class);
 	}
 
 	@Test
 	public void cubbyholeAuthentication() {
-		properties.setAuthentication(CUBBYHOLE);
+		properties.setAuthentication(AuthenticationMethod.CUBBYHOLE);
 		properties.setToken("token");
 
 		assertClientAuthenticationOfType(properties, CubbyholeAuthentication.class);
@@ -181,7 +170,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void gcpComputeAuthentication() {
-		properties.setAuthentication(GCP_GCE);
+		properties.setAuthentication(AuthenticationMethod.GCP_GCE);
 		properties.getGcpGce().setRole("server");
 		properties.getGcpGce().setServiceAccount("service-account");
 
@@ -225,7 +214,7 @@ class SpringVaultClientConfigurationTests {
 				+ "  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/toolsmiths-pcf-sa%40cf-spinnaker.iam.gserviceaccount.com\""
 				+ "}";
 
-		properties.setAuthentication(GCP_IAM);
+		properties.setAuthentication(AuthenticationMethod.GCP_IAM);
 		properties.getGcpIam().setRole("server");
 		properties.getGcpIam().setProjectId("project");
 		properties.getGcpIam().setServiceAccountId("service-account");
@@ -238,7 +227,7 @@ class SpringVaultClientConfigurationTests {
 	public void kuberneteAuthentication() throws IOException {
 		Files.write(Paths.get("target", "token"), "token".getBytes());
 
-		properties.setAuthentication(KUBERNETES);
+		properties.setAuthentication(AuthenticationMethod.KUBERNETES);
 		properties.getKubernetes().setRole("server");
 		properties.getKubernetes().setServiceAccountTokenFile("target/token");
 
@@ -247,7 +236,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void pcfAuthentication() {
-		properties.setAuthentication(PCF);
+		properties.setAuthentication(AuthenticationMethod.PCF);
 		properties.getPcf().setRole("my-role");
 		properties.getPcf().setInstanceKey(new ClassPathResource("configserver-test.yml"));
 		properties.getPcf().setInstanceCertificate(new ClassPathResource("configserver-test.yml"));
@@ -257,7 +246,7 @@ class SpringVaultClientConfigurationTests {
 
 	@Test
 	public void tokenAuthentication() {
-		properties.setAuthentication(TOKEN);
+		properties.setAuthentication(AuthenticationMethod.TOKEN);
 		properties.setToken("token");
 
 		assertClientAuthenticationOfType(properties, TokenAuthentication.class);

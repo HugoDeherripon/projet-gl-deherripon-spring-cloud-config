@@ -17,7 +17,7 @@
 package org.springframework.cloud.config.server.environment.vault;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
-import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.vault.authentication.ClientAuthentication;

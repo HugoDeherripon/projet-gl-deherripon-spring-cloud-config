@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.cloud.config.server.environment.ConfigTokenProvider;
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
-import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.client.ClientHttpRequestFactory;

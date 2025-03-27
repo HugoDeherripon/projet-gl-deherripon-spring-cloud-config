@@ -17,7 +17,7 @@
 package org.springframework.cloud.config.server.environment.vault.authentication;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
-import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.StringUtils;
 import org.springframework.vault.authentication.AppRoleAuthentication;
@@ -25,6 +25,7 @@ import org.springframework.vault.authentication.AppRoleAuthenticationOptions;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.support.VaultToken;
 import org.springframework.web.client.RestOperations;
+import org.springframework.cloud.config.server.environment.AppRoleProperties;
 
 public class AppRoleClientAuthenticationProvider extends SpringVaultClientAuthenticationProvider {
 
@@ -43,7 +44,7 @@ public class AppRoleClientAuthenticationProvider extends SpringVaultClientAuthen
 
 	static AppRoleAuthenticationOptions getAppRoleAuthenticationOptions(VaultEnvironmentProperties vaultProperties) {
 
-		VaultEnvironmentProperties.AppRoleProperties appRole = vaultProperties.getAppRole();
+		AppRoleProperties appRole = vaultProperties.getAppRole();
 
 		AppRoleAuthenticationOptions.AppRoleAuthenticationOptionsBuilder builder = AppRoleAuthenticationOptions
 			.builder()
@@ -62,7 +63,7 @@ public class AppRoleClientAuthenticationProvider extends SpringVaultClientAuthen
 	}
 
 	private static AppRoleAuthenticationOptions.RoleId getRoleId(VaultEnvironmentProperties vaultProperties,
-			VaultEnvironmentProperties.AppRoleProperties appRole) {
+			AppRoleProperties appRole) {
 
 		if (StringUtils.hasText(appRole.getRoleId())) {
 			return AppRoleAuthenticationOptions.RoleId.provided(appRole.getRoleId());
@@ -82,7 +83,7 @@ public class AppRoleClientAuthenticationProvider extends SpringVaultClientAuthen
 	}
 
 	private static AppRoleAuthenticationOptions.SecretId getSecretId(VaultEnvironmentProperties vaultProperties,
-			VaultEnvironmentProperties.AppRoleProperties appRole) {
+			AppRoleProperties appRole) {
 
 		if (StringUtils.hasText(appRole.getSecretId())) {
 			return AppRoleAuthenticationOptions.SecretId.provided(appRole.getSecretId());

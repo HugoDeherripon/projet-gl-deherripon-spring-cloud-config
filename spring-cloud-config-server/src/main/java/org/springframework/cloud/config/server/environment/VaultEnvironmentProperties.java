@@ -24,6 +24,8 @@ import java.util.Map;
 import jakarta.validation.constraints.NotEmpty;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.AppRoleProperties;
 import org.springframework.cloud.config.server.proxy.ProxyHostProperties;
 import org.springframework.cloud.config.server.support.HttpEnvironmentRepositoryProperties;
 import org.springframework.core.io.Resource;
@@ -305,125 +307,6 @@ public class VaultEnvironmentProperties implements HttpEnvironmentRepositoryProp
 
 	public void setPathToKey(String pathToKey) {
 		this.pathToKey = pathToKey;
-	}
-
-	public enum AuthenticationMethod {
-
-		/**
-		 * Vault AppRole machine authentication.
-		 */
-		APPROLE,
-
-		/**
-		 * Amazon Web Services Compute authentication.
-		 */
-		AWS_EC2,
-
-		/**
-		 * Amazon Web Services IAM authentication.
-		 */
-		AWS_IAM,
-
-		/**
-		 * Azure Cloud MSI authentication.
-		 */
-		AZURE_MSI,
-
-		/**
-		 * TLS certificate authentication.
-		 */
-		CERT,
-
-		/**
-		 * Cubbyhole token authentication.
-		 */
-		CUBBYHOLE,
-
-		/**
-		 * Google Cloud Compute authentication.
-		 */
-		GCP_GCE,
-
-		/**
-		 * Google Cloud IAM authentication.
-		 */
-		GCP_IAM,
-
-		/**
-		 * Kubernetes service account token authentication.
-		 */
-		KUBERNETES,
-
-		/**
-		 * Cloud Foundry instance identity certificate authentication.
-		 */
-		PCF,
-
-		/**
-		 * Static token authentication.
-		 */
-		TOKEN
-
-	}
-
-	/**
-	 * AppRole properties.
-	 */
-	@Validated
-	public static class AppRoleProperties {
-
-		/**
-		 * Mount path of the AppRole authentication backend.
-		 */
-		private String appRolePath = "approle";
-
-		/**
-		 * Name of the role, optional, used for pull-mode.
-		 */
-		private String role = "";
-
-		/**
-		 * The RoleId.
-		 */
-		private String roleId = null;
-
-		/**
-		 * The SecretId.
-		 */
-		private String secretId = null;
-
-		public String getAppRolePath() {
-			return this.appRolePath;
-		}
-
-		public String getRole() {
-			return this.role;
-		}
-
-		public String getRoleId() {
-			return this.roleId;
-		}
-
-		public String getSecretId() {
-			return this.secretId;
-		}
-
-		public void setAppRolePath(String appRolePath) {
-			this.appRolePath = appRolePath;
-		}
-
-		public void setRole(String role) {
-			this.role = role;
-		}
-
-		public void setRoleId(String roleId) {
-			this.roleId = roleId;
-		}
-
-		public void setSecretId(String secretId) {
-			this.secretId = secretId;
-		}
-
 	}
 
 	/**

@@ -19,7 +19,7 @@ package org.springframework.cloud.config.server.environment.vault.authentication
 import java.net.URI;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
-import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties.AuthenticationMethod;
+import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
 import org.springframework.vault.authentication.AzureMsiAuthentication;
