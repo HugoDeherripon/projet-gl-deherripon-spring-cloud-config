@@ -82,12 +82,10 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
 
 	/**
 	 * Combine the active and default profiles from the environment.
-	 * @param properties config client properties,
 	 * @param environment application environment.
 	 * @return A list of combined profiles.
 	 */
-	private List<String> combineProfiles(ConfigClientProperties properties,
-			org.springframework.core.env.Environment environment) {
+	private List<String> combineProfiles(org.springframework.core.env.Environment environment) {
 		List<String> combinedProfiles = new ArrayList<>();
 		if (environment.getActiveProfiles().length > 0) {
 			List<String> finalCombinedProfiles = combinedProfiles;
