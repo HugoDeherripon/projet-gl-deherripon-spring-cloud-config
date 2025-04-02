@@ -22,6 +22,8 @@ import java.util.Base64;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.GcpCredentials;
+import org.springframework.cloud.config.server.environment.GcpIamProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
@@ -45,7 +47,7 @@ public class GcpIamClientAuthenticationProvider extends SpringVaultClientAuthent
 		assertClassPresent("com.google.api.client.googleapis.auth.oauth2.GoogleCredential",
 				missingClassForAuthMethod("GoogleCredential", "google-api-client", AuthenticationMethod.GCP_IAM));
 
-		VaultEnvironmentProperties.GcpIamProperties gcp = vaultProperties.getGcpIam();
+		GcpIamProperties gcp = vaultProperties.getGcpIam();
 
 		Assert.hasText(gcp.getRole(), missingPropertyForAuthMethod("gcp-iam.role", AuthenticationMethod.GCP_IAM));
 
@@ -73,10 +75,10 @@ public class GcpIamClientAuthenticationProvider extends SpringVaultClientAuthent
 	@SuppressWarnings("deprecation")
 	private static class GcpCredentialProvider {
 
-		public static GcpCredentialSupplier getGoogleCredential(VaultEnvironmentProperties.GcpIamProperties gcp) {
+		public static GcpCredentialSupplier getGoogleCredential(GcpIamProperties gcp) {
 			return () -> {
 
-				VaultEnvironmentProperties.GcpCredentials credentialProperties = gcp.getCredentials();
+				GcpCredentials credentialProperties = gcp.getCredentials();
 				if (credentialProperties.getLocation() != null) {
 					return GoogleCredential.fromStream(credentialProperties.getLocation().getInputStream());
 				}

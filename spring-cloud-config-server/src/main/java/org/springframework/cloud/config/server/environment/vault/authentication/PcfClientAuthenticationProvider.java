@@ -17,6 +17,7 @@
 package org.springframework.cloud.config.server.environment.vault.authentication;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.PcfProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
@@ -37,7 +38,7 @@ public class PcfClientAuthenticationProvider extends SpringVaultClientAuthentica
 	public ClientAuthentication getClientAuthentication(VaultEnvironmentProperties vaultProperties,
 			RestOperations vaultRestOperations, RestOperations externalRestOperations) {
 
-		VaultEnvironmentProperties.PcfProperties pcfProperties = vaultProperties.getPcf();
+		PcfProperties pcfProperties = vaultProperties.getPcf();
 
 		assertClassPresent("org.bouncycastle.crypto.signers.PSSSigner",
 				missingClassForAuthMethod("BouncyCastle", "bcpkix-jdk15on", AuthenticationMethod.PCF));

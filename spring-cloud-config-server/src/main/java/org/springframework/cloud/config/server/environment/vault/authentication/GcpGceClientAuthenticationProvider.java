@@ -17,6 +17,7 @@
 package org.springframework.cloud.config.server.environment.vault.authentication;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.GcpGceProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
@@ -36,7 +37,7 @@ public class GcpGceClientAuthenticationProvider extends SpringVaultClientAuthent
 	public ClientAuthentication getClientAuthentication(VaultEnvironmentProperties vaultProperties,
 			RestOperations vaultRestOperations, RestOperations externalRestOperations) {
 
-		VaultEnvironmentProperties.GcpGceProperties gcp = vaultProperties.getGcpGce();
+		GcpGceProperties gcp = vaultProperties.getGcpGce();
 
 		Assert.hasText(gcp.getRole(), missingPropertyForAuthMethod("gcp-iam.role", AuthenticationMethod.GCP_GCE));
 

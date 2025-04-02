@@ -19,6 +19,7 @@ package org.springframework.cloud.config.server.environment.vault.authentication
 import java.net.URI;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.AzureMsiProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
@@ -37,7 +38,7 @@ public class AzureMsiClientAuthenticationProvider extends SpringVaultClientAuthe
 	public ClientAuthentication getClientAuthentication(VaultEnvironmentProperties vaultProperties,
 			RestOperations vaultRestOperations, RestOperations externalRestOperations) {
 
-		VaultEnvironmentProperties.AzureMsiProperties azureMsi = vaultProperties.getAzureMsi();
+		AzureMsiProperties azureMsi = vaultProperties.getAzureMsi();
 
 		Assert.hasText(azureMsi.getRole(),
 				missingPropertyForAuthMethod("azure-msi.role", AuthenticationMethod.AZURE_MSI));

@@ -16,7 +16,6 @@
 
 package org.springframework.cloud.config.client;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -276,9 +275,8 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 	protected Environment getRemoteEnvironment(ConfigDataLoaderContext context, ConfigServerConfigDataResource resource,
 			String label, String state) {
 		ConfigClientProperties properties = resource.getProperties();
-		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);
-		
-		// Préparer la requête
+		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);	
+		//Préparer la requête
 		String[] uris = properties.getDiscovery().isEnabled() 
 			? context.getBootstrapContext().get(ConfigClientProperties.class).getUri()
 			: properties.getUri();

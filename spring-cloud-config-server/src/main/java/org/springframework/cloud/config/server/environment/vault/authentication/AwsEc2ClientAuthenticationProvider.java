@@ -19,6 +19,7 @@ package org.springframework.cloud.config.server.environment.vault.authentication
 import java.net.URI;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.AwsEc2Properties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.StringUtils;
@@ -37,7 +38,7 @@ public class AwsEc2ClientAuthenticationProvider extends SpringVaultClientAuthent
 	public ClientAuthentication getClientAuthentication(VaultEnvironmentProperties vaultProperties,
 			RestOperations vaultRestOperations, RestOperations externalRestOperations) {
 
-		VaultEnvironmentProperties.AwsEc2Properties awsEc2 = vaultProperties.getAwsEc2();
+		AwsEc2Properties awsEc2 = vaultProperties.getAwsEc2();
 
 		AwsEc2AuthenticationOptions.Nonce nonce = StringUtils.hasText(awsEc2.getNonce())
 				? AwsEc2AuthenticationOptions.Nonce.provided(awsEc2.getNonce().toCharArray())

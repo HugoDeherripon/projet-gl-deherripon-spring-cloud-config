@@ -17,6 +17,7 @@
 package org.springframework.cloud.config.server.environment.vault.authentication;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.KubernetesProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.Assert;
@@ -36,7 +37,7 @@ public class KubernetesClientAuthenticationProvider extends SpringVaultClientAut
 	public ClientAuthentication getClientAuthentication(VaultEnvironmentProperties vaultProperties,
 			RestOperations vaultRestOperations, RestOperations externalRestOperations) {
 
-		VaultEnvironmentProperties.KubernetesProperties kubernetes = vaultProperties.getKubernetes();
+		KubernetesProperties kubernetes = vaultProperties.getKubernetes();
 
 		Assert.hasText(kubernetes.getRole(),
 				missingPropertyForAuthMethod("kubernetes.role", AuthenticationMethod.KUBERNETES));

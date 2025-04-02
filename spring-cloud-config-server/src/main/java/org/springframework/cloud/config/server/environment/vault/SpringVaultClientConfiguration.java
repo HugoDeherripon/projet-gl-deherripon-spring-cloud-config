@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.cloud.config.server.environment.ConfigTokenProvider;
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.Ssl;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -108,7 +109,7 @@ public class SpringVaultClientConfiguration extends AbstractVaultConfiguration {
 					+ "custom keyStore and trustStore material instead.");
 		}
 
-		VaultEnvironmentProperties.Ssl ssl = vaultProperties.getSsl();
+		Ssl ssl = vaultProperties.getSsl();
 
 		SslConfiguration.KeyStoreConfiguration keyStoreConfiguration = getKeyStoreConfiguration(ssl.getKeyStore(),
 				ssl.getKeyStorePassword());

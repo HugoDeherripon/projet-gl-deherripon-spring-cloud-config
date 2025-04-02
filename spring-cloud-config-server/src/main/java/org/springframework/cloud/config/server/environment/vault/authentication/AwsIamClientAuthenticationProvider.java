@@ -23,6 +23,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 import org.springframework.cloud.config.server.environment.VaultEnvironmentProperties;
+import org.springframework.cloud.config.server.environment.AwsIamProperties;
 import org.springframework.cloud.config.server.environment.enums.AuthenticationMethod;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultClientAuthenticationProvider;
 import org.springframework.util.StringUtils;
@@ -44,7 +45,7 @@ public class AwsIamClientAuthenticationProvider extends SpringVaultClientAuthent
 		assertClassPresent("software.amazon.awssdk.auth.credentials.AwsCredentials",
 				missingClassForAuthMethod("AwsCredentials", "aws-core", AuthenticationMethod.AWS_IAM));
 
-		VaultEnvironmentProperties.AwsIamProperties awsIam = vaultProperties.getAwsIam();
+		AwsIamProperties awsIam = vaultProperties.getAwsIam();
 
 		AwsCredentialsProvider credentialsProvider = AwsCredentialProvider.getAwsCredentialsProvider();
 
