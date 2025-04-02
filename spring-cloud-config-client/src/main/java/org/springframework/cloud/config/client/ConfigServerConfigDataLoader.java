@@ -275,58 +275,54 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 	protected Environment getRemoteEnvironment(ConfigDataLoaderContext context, ConfigServerConfigDataResource resource,
 			String label, String state) {
 		ConfigClientProperties properties = resource.getProperties();
-		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);	
-		//Préparer la requête
-		String[] uris = properties.getDiscovery().isEnabled() 
-			? context.getBootstrapContext().get(ConfigClientProperties.class).getUri()
-			: properties.getUri();
-			
+		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);
+		String[] uris = properties.getDiscovery().isEnabled()
+				? context.getBootstrapContext().get(ConfigClientProperties.class).getUri() : properties.getUri();
+
 		String path = "/{name}/{profile}" + (StringUtils.hasText(label) ? "/{label}" : "");
-		Object[] pathVariables = StringUtils.hasText(label) 
-			? new String[] { properties.getName(), resource.getProfiles(), Environment.denormalize(label) }
-			: new String[] { properties.getName(), resource.getProfiles() };
-		
-		// Préparer les en-têtes
+		Object[] pathVariables = StringUtils.hasText(label)
+				? new String[] { properties.getName(), resource.getProfiles(), Environment.denormalize(label) }
+				: new String[] { properties.getName(), resource.getProfiles() };
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType(properties.getMediaType())));
 		headers.setAcceptCharset(Collections.singletonList(properties.getCharset()));
-		
+
 		if (StringUtils.hasText(properties.getToken())) {
 			headers.add(TOKEN_HEADER, properties.getToken());
 		}
 		if (StringUtils.hasText(state) && properties.isSendState()) {
 			headers.add(STATE_HEADER, state);
 		}
-		
-		// Essayer chaque URI jusqu'à ce qu'une fonctionne
+
 		ConfigClientRequestTemplateFactory requestTemplateFactory = context.getBootstrapContext()
 			.get(ConfigClientRequestTemplateFactory.class);
-			
+
 		for (int i = 0; i < uris.length; i++) {
 			String uri = uris[i];
 			try {
-				// Ajouter l'authentification
 				if (properties.getDiscovery().isEnabled()) {
 					ConfigClientProperties bootstrap = context.getBootstrapContext().get(ConfigClientProperties.class);
-					requestTemplateFactory.addAuthorizationToken(headers, bootstrap.getUsername(), bootstrap.getPassword());
-				} else {
-					ConfigClientProperties.Credentials credentials = properties.getCredentials(i);
-					requestTemplateFactory.addAuthorizationToken(headers, credentials.getUsername(), credentials.getPassword());
+					requestTemplateFactory.addAuthorizationToken(headers, bootstrap.getUsername(),
+							bootstrap.getPassword());
 				}
-				
-				// Faire la requête
+				else {
+					ConfigClientProperties.Credentials credentials = properties.getCredentials(i);
+					requestTemplateFactory.addAuthorizationToken(headers, credentials.getUsername(),
+							credentials.getPassword());
+				}
+
 				HttpEntity<Void> entity = new HttpEntity<>(null, headers);
-				ResponseEntity<Environment> response = restTemplate.exchange(
-					uri + path, HttpMethod.GET, entity, Environment.class, pathVariables);
-					
+				ResponseEntity<Environment> response = restTemplate.exchange(uri + path, HttpMethod.GET, entity,
+						Environment.class, pathVariables);
+
 				if (response.getStatusCode() == HttpStatus.OK) {
 					return response.getBody();
 				}
 			}
 			catch (HttpClientErrorException | HttpServerErrorException e) {
-				// Continuer avec l'URI suivante si possible
-				if (e.getStatusCode() == HttpStatus.NOT_FOUND || 
-					(i < uris.length - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS)) {
+				if (e.getStatusCode() == HttpStatus.NOT_FOUND
+						|| (i < uris.length - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS)) {
 					logger.info("Failed to fetch configs from server at " + uri + ". Will try next URL if available.");
 					continue;
 				}
@@ -339,7 +335,7 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 				logger.info("Connection failed for " + uri + ". Will try next URL if available.");
 			}
 		}
-		
+
 		return null;
 	}
 

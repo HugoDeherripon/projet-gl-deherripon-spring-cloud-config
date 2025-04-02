@@ -105,7 +105,7 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
 	public org.springframework.core.env.PropertySource<?> locate(org.springframework.core.env.Environment environment) {
 		ConfigClientProperties properties = this.defaultProperties.override(environment);
 		if (!StringUtils.hasText(properties.getProfile())) {
-			properties.setProfile(String.join(",", combineProfiles(properties, environment)));
+			properties.setProfile(String.join(",", combineProfiles(environment)));
 		}
 
 		if (StringUtils.startsWithIgnoreCase(properties.getName(), "application-")) {
