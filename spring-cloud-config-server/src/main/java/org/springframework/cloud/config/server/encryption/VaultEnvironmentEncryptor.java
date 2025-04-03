@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.config.server.encryption.vault;
+package org.springframework.cloud.config.server.encryption;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

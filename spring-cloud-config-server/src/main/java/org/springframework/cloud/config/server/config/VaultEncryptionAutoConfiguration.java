@@ -18,7 +18,7 @@ package org.springframework.cloud.config.server.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.cloud.config.server.encryption.vault.VaultEnvironmentEncryptor;
+import org.springframework.cloud.config.server.encryption.VaultEnvironmentEncryptor;
 import org.springframework.cloud.config.server.environment.vault.SpringVaultEnvironmentRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
