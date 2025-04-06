@@ -276,13 +276,13 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 			String label, String state) {
 		ConfigClientProperties properties = resource.getProperties();
 		RestTemplate restTemplate = context.getBootstrapContext().get(RestTemplate.class);
-		String[] uris = properties.getDiscovery().isEnabled()
-				? context.getBootstrapContext().get(ConfigClientProperties.class).getUri() : properties.getUri();
-
+		String[] uris = properties.getDiscovery().isEnabled() 
+			? context.getBootstrapContext().get(ConfigClientProperties.class).getUri()
+			: properties.getUri();
 		String path = "/{name}/{profile}" + (StringUtils.hasText(label) ? "/{label}" : "");
-		Object[] pathVariables = StringUtils.hasText(label)
-				? new String[] { properties.getName(), resource.getProfiles(), Environment.denormalize(label) }
-				: new String[] { properties.getName(), resource.getProfiles() };
+		Object[] pathVariables = StringUtils.hasText(label) 
+			? new String[] { properties.getName(), resource.getProfiles(), Environment.denormalize(label) }
+			: new String[] { properties.getName(), resource.getProfiles() };
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.parseMediaType(properties.getMediaType())));
@@ -303,26 +303,24 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 			try {
 				if (properties.getDiscovery().isEnabled()) {
 					ConfigClientProperties bootstrap = context.getBootstrapContext().get(ConfigClientProperties.class);
-					requestTemplateFactory.addAuthorizationToken(headers, bootstrap.getUsername(),
-							bootstrap.getPassword());
-				}
-				else {
+					requestTemplateFactory.addAuthorizationToken(headers, bootstrap.getUsername(), bootstrap.getPassword());
+				} else {
 					ConfigClientProperties.Credentials credentials = properties.getCredentials(i);
-					requestTemplateFactory.addAuthorizationToken(headers, credentials.getUsername(),
-							credentials.getPassword());
+					requestTemplateFactory.addAuthorizationToken(headers, credentials.getUsername(), credentials.getPassword());
 				}
-
+					
 				HttpEntity<Void> entity = new HttpEntity<>(null, headers);
-				ResponseEntity<Environment> response = restTemplate.exchange(uri + path, HttpMethod.GET, entity,
-						Environment.class, pathVariables);
-
+				ResponseEntity<Environment> response = restTemplate.exchange(
+					uri + path, HttpMethod.GET, entity, Environment.class, pathVariables);
+						
 				if (response.getStatusCode() == HttpStatus.OK) {
 					return response.getBody();
 				}
 			}
 			catch (HttpClientErrorException | HttpServerErrorException e) {
-				if (e.getStatusCode() == HttpStatus.NOT_FOUND
-						|| (i < uris.length - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS)) {
+					
+				if (e.getStatusCode() == HttpStatus.NOT_FOUND || 
+					(i < uris.length - 1 && properties.getMultipleUriStrategy() == MultipleUriStrategy.ALWAYS)) {
 					logger.info("Failed to fetch configs from server at " + uri + ". Will try next URL if available.");
 					continue;
 				}
@@ -335,7 +333,7 @@ public class ConfigServerConfigDataLoader implements ConfigDataLoader<ConfigServ
 				logger.info("Connection failed for " + uri + ". Will try next URL if available.");
 			}
 		}
-
+			
 		return null;
 	}
 
