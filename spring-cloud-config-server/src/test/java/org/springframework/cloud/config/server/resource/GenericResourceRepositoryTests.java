@@ -17,7 +17,7 @@
 package org.springframework.cloud.config.server.resource;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 
 import io.micrometer.observation.ObservationRegistry;
 import org.assertj.core.api.Assertions;
@@ -168,9 +168,9 @@ public class GenericResourceRepositoryTests {
 				when(relativeResource.isReadable()).thenReturn(true);
 				Resource resource = null;
 				try {
-					when(relativeResource.getURL()).thenReturn(new URL("https://us-east-1/test/main%2Fdata.json"));
+					when(relativeResource.getURL()).thenReturn(URI.create("https://us-east-1/test/main%2Fdata.json").toURL());
 					resource = mock(Resource.class);
-					when(resource.getURL()).thenReturn(new URL("https://us-east-1/test"));
+					when(resource.getURL()).thenReturn(URI.create("https://us-east-1/test").toURL());
 					when(resource.createRelative(eq("data.json"))).thenReturn(relativeResource);
 				}
 				catch (IOException e) {
@@ -186,7 +186,7 @@ public class GenericResourceRepositoryTests {
 		});
 
 		Resource resource = genericResourceRepository.findOne("app", "default", "main", "data.json");
-		assertThat(resource.getURL()).isEqualTo(new URL("https://us-east-1/test/main%2Fdata.json"));
+		assertThat(resource.getURL()).isEqualTo(URI.create("https://us-east-1/test/main%2Fdata.json").toURL());
 	}
 
 }

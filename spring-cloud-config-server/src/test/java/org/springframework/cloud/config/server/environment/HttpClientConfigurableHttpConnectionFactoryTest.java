@@ -17,7 +17,7 @@
 package org.springframework.cloud.config.server.environment;
 
 import java.lang.reflect.Field;
-import java.net.URL;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +47,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 
 	@Test
 	public void noConfigAdded() throws Exception {
-		HttpConnection actual = this.connectionFactory.create(new URL("http://localhost/test.git"));
+		HttpConnection actual = this.connectionFactory.create(URI.create("http://localhost/test.git").toURL());
 
 		assertThat(actual).isNotNull();
 	}
@@ -65,7 +65,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		properties.setUri(url);
 		this.connectionFactory.addConfiguration(properties);
 
-		HttpConnection actualConnection = this.connectionFactory.create(new URL(url));
+		HttpConnection actualConnection = this.connectionFactory.create(URI.create(url).toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -83,7 +83,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		HttpClient4BuilderCustomizer customizer = mock(HttpClient4BuilderCustomizer.class);
 		this.connectionFactory.addConfiguration(properties, List.of(customizer));
 
-		HttpConnection actualConnection = this.connectionFactory.create(new URL(url));
+		HttpConnection actualConnection = this.connectionFactory.create(URI.create(url).toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -101,7 +101,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		properties.setUri(url);
 		this.connectionFactory.addConfiguration(properties);
 
-		HttpConnection actualConnection = this.connectionFactory.create(new URL(url + "/some/path.properties"));
+		HttpConnection actualConnection = this.connectionFactory.create(URI.create(url + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -118,7 +118,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("http://localhost/value-test.git" + "/some/path.properties"));
+			.create(URI.create("http://localhost/value-test.git" + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -135,7 +135,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("https://localhost/v1/repos/pvvts_configs-applicationPasswords" + "/some/path.properties"));
+			.create(URI.create("https://localhost/v1/repos/pvvts_configs-applicationPasswords" + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -154,7 +154,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties1);
 		this.connectionFactory.addConfiguration(properties2);
 
-		HttpConnection actualConnection = this.connectionFactory.create(new URL(properties1.getUri()));
+		HttpConnection actualConnection = this.connectionFactory.create(URI.create(properties1.getUri()).toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri
 			.get(properties1.getUri());
@@ -171,7 +171,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties1);
 		this.connectionFactory.addConfiguration(properties2);
 
-		HttpConnection actualConnection = this.connectionFactory.create(new URL(properties1.getUri()));
+		HttpConnection actualConnection = this.connectionFactory.create(URI.create(properties1.getUri()).toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri
 			.get(properties1.getUri());
@@ -192,7 +192,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties3);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("https://github.com/user/user-MultiApps.git/info/refs?service=git-upload-pack"));
+			.create(URI.create("https://github.com/user/user-MultiApps.git/info/refs?service=git-upload-pack").toURL());
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri
 			.get(properties2.getUri());
 		HttpClientBuilder actualHttpClientBuilder = getActualHttpClientBuilder(actualConnection);
@@ -209,7 +209,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties2);
 
 		HttpConnection actualConnection = this.connectionFactory.create(
-				new URL(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")));
+				URI.create(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")).toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri
 			.get(properties2.getUri());
@@ -227,7 +227,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties2);
 
 		HttpConnection actualConnection = this.connectionFactory.create(
-				new URL(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")));
+				URI.create(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")).toURL());
 
 		HttpClient actualHttpClient = getActualHttpClient(actualConnection);
 		assertThat(actualHttpClient).isNull();
@@ -243,8 +243,8 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties2);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")
-					+ "/some/path.properties"));
+			.create(URI.create(properties2.getUri().replace("{placeholder1}", "value1").replace("{placeholder2}", "value2")
+					+ "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri
 			.get(properties2.getUri());
@@ -259,7 +259,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("http://server.com/server-test.git" + "/some/path.properties"));
+			.create(URI.create("http://server.com/server-test.git" + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -276,7 +276,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("http://server.com/hello-foo/server-test.git" + "/some/path.properties"));
+			.create(URI.create("http://server.com/hello-foo/server-test.git" + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()
@@ -293,7 +293,7 @@ public class HttpClientConfigurableHttpConnectionFactoryTest {
 		this.connectionFactory.addConfiguration(properties);
 
 		HttpConnection actualConnection = this.connectionFactory
-			.create(new URL("http://localhost/val-testval.git" + "/some/path.properties"));
+			.create(URI.create("http://localhost/val-testval.git" + "/some/path.properties").toURL());
 
 		HttpClientBuilder expectedHttpClientBuilder = this.connectionFactory.httpClientBuildersByUri.values()
 			.stream()

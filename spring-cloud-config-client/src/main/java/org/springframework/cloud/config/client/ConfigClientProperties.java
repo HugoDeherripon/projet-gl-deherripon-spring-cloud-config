@@ -17,6 +17,7 @@
 package org.springframework.cloud.config.client;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -387,7 +388,7 @@ public class ConfigClientProperties {
 		result.username = explicitCredentials.username;
 		result.password = explicitCredentials.password;
 		try {
-			URL url = new URL(uri);
+			URL url = URI.create(uri).toURL();
 			String userInfo = url.getUserInfo();
 			// no credentials in url, return explicit credentials
 			if (ObjectUtils.isEmpty(userInfo) || ":".equals(userInfo)) {

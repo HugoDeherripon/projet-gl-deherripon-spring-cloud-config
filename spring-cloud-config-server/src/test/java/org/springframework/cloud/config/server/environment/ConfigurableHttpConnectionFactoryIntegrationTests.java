@@ -252,7 +252,7 @@ public class ConfigurableHttpConnectionFactoryIntegrationTests {
 
 	private HttpClient getHttpClientForUrl(String repoUrl) throws IOException {
 		HttpConnectionFactory connectionFactory = HttpTransport.getConnectionFactory();
-		URL url = new URL(repoUrl);
+		URL url = URI.create(repoUrl).toURL();
 		HttpConnection httpConnection = connectionFactory.create(url);
 		assertThat(httpConnection).isInstanceOf(HttpClientConnection.class);
 		return (HttpClient) ReflectionTestUtils.getField(httpConnection, "client");
